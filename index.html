@@ -10,7 +10,6 @@
   <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-
 </head>
 
 <body>
@@ -28,22 +27,79 @@
       { id: 6, titulo: 'Avatar', genero: "scifi" }
     ];
 
+
     // Aqui debemos determinar lo que vamos a mostrar dentro de "contenido"
     // Deben listarse las películas, con un color de texto diferente para cada género
     // Además debemos mostrar un poster al azar de la lista de peliculas.
     // Al ser al azar, el poster podrá cambiar cada vez que refrescamos la página.
-        
-    
+
+
     // Luego definimos el root para renderizar allí contenido
     const root = ReactDOM.createRoot(document.getElementById('contenido'));
     // Renderizamos con la siguiente sentencia (habría que definir antes qué tiene "elementoPelis")
+
+
+    const peli_nro = Math.floor(Math.random() * peliculas.length);
+    var api = 'http://www.omdbapi.com/?apikey=c4ad9931&t=' + peliculas[peli_nro].titulo
+    var poster
+
+    const GetPoster = () => {
+      const [poster, setPoster] = React.useState()
+      function randomPoster() {
+        return fetch(api)
+          .then(response => response.json())
+          .then(data => setPoster(data.Poster))
+      }
+      randomPoster()
+      return (<img src={poster} />)
+    }
+
+    // sacado de chat gpt
+    function getRandomColor() {
+      const letters = "0123456789ABCDEF";
+      let color = "#";
+      for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    }
+    {/* intente que se cambiara de forma aleatoria el color de los diferentes generos */ }
+    const generos = ["scifi", "comedia", "accion"];
+    generos.forEach(genero => {
+      const elementos = document.getElementsByClassName(genero);
+      console.log(elementos.baseURI)
+      const colorAleatorio = getRandomColor();
+      for (let i = 0; i < elementos.length; i++) {
+        console.log(elementos[i])
+        elementos[i].style.color = colorAleatorio;
+      }
+    });
+
+    const elementoPelis = (
+      <>
+        <div>
+          <ol>
+            {peliculas.map(pelicula => {
+              return (
+                <li
+                  key={pelicula.id}
+                  className={pelicula.genero}
+                >
+                  {pelicula.titulo} - {pelicula.genero}
+                </li>
+              );
+            })}
+          </ol>
+        </div>
+        <div>
+          <GetPoster />
+        </div>
+      </>
+    );
     root.render(elementoPelis);
 
 
-   
   </script>
-
-
 </body>
 
 </html>
